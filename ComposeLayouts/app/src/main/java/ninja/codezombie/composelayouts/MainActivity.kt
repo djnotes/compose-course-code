@@ -31,8 +31,16 @@ fun ItemScreen() {
                 .fillMaxWidth()
                 .background(Color.Magenta)
                 .height(300.dp)
-                .weight(3f)
+                .weight(3f), contentAlignment = Alignment.Center
         ) {
+            Box(modifier = Modifier.size(200.dp).background(Color.Blue))
+            Box(modifier = Modifier.size(100.dp).background(Color.Red))
+
+            Box(modifier = Modifier.size(100.dp).background(Color.Green).align(Alignment.TopStart))
+            Box(modifier = Modifier.size(100.dp).background(Color.Green).align(Alignment.TopEnd))
+            Box(modifier = Modifier.size(100.dp).background(Color.Green).align(Alignment.BottomStart))
+            Box(modifier = Modifier.size(100.dp).background(Color.Green).align(Alignment.BottomEnd))
+
 
         }
 
