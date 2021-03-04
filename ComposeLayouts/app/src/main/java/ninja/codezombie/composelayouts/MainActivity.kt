@@ -11,9 +11,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import ninja.codezombie.composelayouts.ui.theme.ComposeLayoutsTheme
 
@@ -92,18 +94,48 @@ fun PreviewItemScreen() {
 
 @Composable
 fun ConstraintItemScreen() {
-    ConstraintLayout(modifier = Modifier.fillMaxHeight()){
-        val (box, input, increase, decrease) = createRefs()
+    val constraints = ConstraintSet{
+        val box = createRefFor("box")
+        constrain(box){
+            start.linkTo(parent.start)
+            top.linkTo(parent.top)
+            end.linkTo(parent.end)
+        }
+
+        val input = createRefFor("input")
+        val increase = createRefFor("increase")
+        val decrease = createRefFor("decrease")
+
+        constrain(input){
+            top.linkTo(box.bottom)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        }
+
+        constrain(increase) {
+            start.linkTo(parent.start)
+            top.linkTo(input.bottom)
+            bottom.linkTo(parent.bottom)
+            width = Dimension.fillToConstraints
+            end.linkTo(decrease.start)
+        }
+
+        constrain(decrease){
+            top.linkTo(increase.top)
+            end.linkTo(parent.end)
+            bottom.linkTo(increase.bottom)
+            width = Dimension.fillToConstraints
+            start.linkTo(increase.end)
+        }
+
+    }
+    ConstraintLayout(modifier = Modifier.fillMaxHeight(), constraintSet = constraints){
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color.Magenta)
                 .height(500.dp)
-                .constrainAs(box){
-                    start.linkTo(parent.start)
-                    top.linkTo(parent.top)
-                    end.linkTo(parent.end)
-                }
+                .layoutId("box")
                 , contentAlignment = Alignment.Center
         ) {
             Box(modifier = Modifier
@@ -136,38 +168,20 @@ fun ConstraintItemScreen() {
 
         OutlinedTextField(value = "0", onValueChange = { /*TODO*/ },
             modifier = Modifier.padding(4.dp)
-                .constrainAs(input){
-                    top.linkTo(box.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
+                .layoutId("input")
         )
 
 
         Button(onClick = {}, modifier = Modifier
             .padding(4.dp)
-            .constrainAs(increase){
-                start.linkTo(parent.start)
-                top.linkTo(input.bottom)
-                bottom.linkTo(parent.bottom)
-                width = Dimension.fillToConstraints
-                end.linkTo(decrease.start)
-
-
-            }
+            .layoutId("increase")
             ) {
             Text("Increase")
         }
 
         Button(onClick = {}, modifier = Modifier
             .padding(4.dp)
-            .constrainAs(decrease){
-                top.linkTo(increase.top)
-                end.linkTo(parent.end)
-                bottom.linkTo(increase.bottom)
-                width = Dimension.fillToConstraints
-                start.linkTo(increase.end)
-            }
+            .layoutId("decrease")
             ) {
             Text("Decrease")
         }
