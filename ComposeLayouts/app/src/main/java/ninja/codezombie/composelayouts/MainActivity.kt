@@ -151,6 +151,8 @@ fun ConstraintItemScreen() {
                 top.linkTo(input.bottom)
                 bottom.linkTo(parent.bottom)
                 width = Dimension.fillToConstraints
+                end.linkTo(decrease.start)
+
 
             }
             ) {
@@ -164,6 +166,7 @@ fun ConstraintItemScreen() {
                 end.linkTo(parent.end)
                 bottom.linkTo(increase.bottom)
                 width = Dimension.fillToConstraints
+                start.linkTo(increase.end)
             }
             ) {
             Text("Decrease")
