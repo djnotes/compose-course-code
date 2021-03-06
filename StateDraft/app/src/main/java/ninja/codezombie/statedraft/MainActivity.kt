@@ -1,9 +1,11 @@
 package ninja.codezombie.statedraft
 
+import android.app.Application
 import android.os.Bundle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -12,6 +14,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -24,6 +27,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ninja.codezombie.statedraft.ui.theme.StateDraftTheme
 import kotlin.random.Random
 
@@ -32,8 +37,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             StateDraftTheme() {
-                var count by remember{mutableStateOf(0)}
-                ItemScreen(count, onCountChange = {change -> count = if(count <= 0 && change == -1) 0 else count + change})
+//                val countViewModel = ViewModelProvider.AndroidViewModelFactory(Application()).create(CountViewModel::class.java)
+                val countViewModel: CountViewModel = viewModel()
+                val count by countViewModel.count.observeAsState(0)
+                ItemScreen(count) { change -> countViewModel.onCountChange(change) }
             }
         }
     }
@@ -94,11 +101,10 @@ fun ItemScreen(count: Int, onCountChange: (change: Int) -> Unit) {
 @Preview
 @Composable
 fun PreviewItemScreen() {
-    var count by remember{mutableStateOf(0)}
-    ItemScreen(count){
-        change ->
-        count = if (count > 0) count + change else 0
-    }
+//    var count by remember{mutableStateOf(0)}
+    val countViewModel: CountViewModel = viewModel()
+    val count by countViewModel.count.observeAsState(0)
+    ItemScreen(count) { change -> countViewModel.onCountChange(change) }
 }
 
 
