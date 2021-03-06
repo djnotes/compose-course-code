@@ -16,6 +16,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -30,7 +32,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             StateDraftTheme() {
-                ItemScreen()
+                var count by remember{mutableStateOf(0)}
+                ItemScreen(count, onCountChange = {change -> count = if(count <= 0 && change == -1) 0 else count + change})
             }
         }
     }
@@ -38,7 +41,7 @@ class MainActivity : AppCompatActivity() {
 
 
 @Composable
-fun ItemScreen() {
+fun ItemScreen(count: Int, onCountChange: (change: Int) -> Unit) {
     val colors = listOf(
         Color.Black,
         Color.Gray,
@@ -49,36 +52,33 @@ fun ItemScreen() {
         Color.Blue,
         Color.DarkGray
     )
-
-    var count = remember{mutableStateOf(0)}
     val size = 400.dp
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
             Box(modifier = Modifier
                 .size(size)
                 .background(Color.Red), contentAlignment = Alignment.Center){
                 var childSize = size - 20.dp
-                for (i in 0 until count.value){
+                for (i in 0 until count){
                     Box(modifier = Modifier
                         .size(childSize)
-                        .background(colors[i%colors.count()])
+                        .rotate(0f + 3f * i)
+                        .shadow(5.dp)
+//                        .background(colors[i % colors.count()])
+                        .background(Color.Gray)
                         .border(1.dp, Color.Black)
                     )
-
-
-
-
                     childSize -= 20.dp
                 }
             }
-            OutlinedTextField(value = "${count.value}", onValueChange = {})
+            OutlinedTextField(value = "$count", onValueChange = {})
             Row {
-                Button(onClick = { count.value++ }, modifier= Modifier.padding(8.dp)) {
+                Button(onClick = { onCountChange(1) }, modifier= Modifier.padding(8.dp)) {
                     Row{
                         Icon(imageVector = Icons.Rounded.Add, contentDescription = "Increase")
                         Text("Increase")
                     }
                 }
-                Button(onClick = { count.value = if (count.value <= 0) 0 else count.value-1 }, Modifier.padding(8.dp)) {
+                Button(onClick = { onCountChange(-1) }, Modifier.padding(8.dp)) {
                     Row{
                         Icon(painter = painterResource(id = R.drawable.ic_baseline_remove_24), contentDescription = "Delete")
                         Text("Decrease")
@@ -94,28 +94,11 @@ fun ItemScreen() {
 @Preview
 @Composable
 fun PreviewItemScreen() {
-    ItemScreen()
+    var count by remember{mutableStateOf(0)}
+    ItemScreen(count){
+        change ->
+        count = if (count > 0) count + change else 0
+    }
 }
 
-@Composable
-fun pickColor(): Color {
-    val colors = listOf(
-        Color.Black,
-        Color.Gray,
-        Color.Magenta,
-        Color.Yellow,
-        Color.LightGray,
-        Color.Cyan,
-        Color.Blue,
-        Color.DarkGray
-    )
-
-//    val index = Random.nextInt(0,colors.count() - 1)
-    var index by remember{mutableStateOf(0)}
-
-    return if (index < colors.count()) {val temp = colors[index]; index++; temp}
-    else {index=0;colors[index]}
-
-//    return colors[index]
-}
 
