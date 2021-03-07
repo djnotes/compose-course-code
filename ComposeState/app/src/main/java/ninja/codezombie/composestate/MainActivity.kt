@@ -17,6 +17,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ninja.codezombie.composestate.ui.theme.ComposeStateTheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,7 +33,7 @@ class MainActivity : AppCompatActivity() {
 @Composable
 fun BoxScreen() {
     val boxSize = 400.dp
-    var count = remember{mutableStateOf(0)}
+    var count by remember{mutableStateOf(0)}
     Column (horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()){
         Box(
             modifier = Modifier
@@ -40,21 +43,21 @@ fun BoxScreen() {
             contentAlignment = Alignment.Center
         ){
             var childSize = boxSize - 20.dp
-            for(i in 0 until count.value){
+            for(i in 0 until count){
                 Box(modifier = Modifier.size(childSize).rotate(i*3f)
                     .background(Color.Gray).border(1.dp, Color.Black))
                 childSize -= 20.dp
             }
         }
 
-        OutlinedTextField(value = "${count.value}", onValueChange = { /*TODO*/ })
+        OutlinedTextField(value = "$count", onValueChange = { /*TODO*/ })
 
         Row() {
-            Button(onClick = { count.value++ }, Modifier.padding(8.dp)) {
+            Button(onClick = { count++ }, Modifier.padding(8.dp)) {
                 Text("Increase")
             }
 
-            Button(onClick = { count.value = if (count.value <= 0) 0 else count.value - 1 }, Modifier.padding(8.dp)) {
+            Button(onClick = { count = if (count <= 0) 0 else count - 1 }, Modifier.padding(8.dp)) {
                 Text("Decrease")
             }
         }
