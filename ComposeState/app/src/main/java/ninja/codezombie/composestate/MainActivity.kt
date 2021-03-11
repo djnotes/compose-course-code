@@ -18,22 +18,26 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ninja.codezombie.composestate.ui.theme.ComposeStateTheme
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            BoxScreen()
+//            val (count, onCountChange) =  remember{mutableStateOf(0)}
+            val countVM : CountViewModel = viewModel()
+            val count by countVM.count.observeAsState(0)
+            BoxScreen(count) {newCount -> countVM.onCountChanged(newCount)}
         }
     }
 }
 
 @Composable
-fun BoxScreen() {
+fun BoxScreen(count: Int, onCountChange: (Int) -> Unit) {
     val boxSize = 400.dp
-    var count by remember{mutableStateOf(0)}
     Column (horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()){
         Box(
             modifier = Modifier
@@ -44,8 +48,11 @@ fun BoxScreen() {
         ){
             var childSize = boxSize - 20.dp
             for(i in 0 until count){
-                Box(modifier = Modifier.size(childSize).rotate(i*3f)
-                    .background(Color.Gray).border(1.dp, Color.Black))
+                Box(modifier = Modifier
+                    .size(childSize)
+                    .rotate(i * 3f)
+                    .background(Color.Gray)
+                    .border(1.dp, Color.Black))
                 childSize -= 20.dp
             }
         }
@@ -53,11 +60,11 @@ fun BoxScreen() {
         OutlinedTextField(value = "$count", onValueChange = { /*TODO*/ })
 
         Row() {
-            Button(onClick = { count++ }, Modifier.padding(8.dp)) {
+            Button(onClick = {onCountChange(count + 1) }, Modifier.padding(8.dp)) {
                 Text("Increase")
             }
 
-            Button(onClick = { count = if (count <= 0) 0 else count - 1 }, Modifier.padding(8.dp)) {
+            Button(onClick = { onCountChange(if (count - 1 <= 0) 0 else count - 1) }, Modifier.padding(8.dp)) {
                 Text("Decrease")
             }
         }
@@ -67,5 +74,8 @@ fun BoxScreen() {
 @Preview
 @Composable
 fun PreviewBoxScreen() {
-    BoxScreen()
+//    var count by remember{mutableStateOf(0)}
+//    BoxScreen(count) {newCount -> count = newCount}
 }
+
+
