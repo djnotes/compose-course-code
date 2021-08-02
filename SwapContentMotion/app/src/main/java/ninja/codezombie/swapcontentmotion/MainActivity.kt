@@ -5,10 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.*
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.keyframes
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -40,19 +37,26 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-enum class Pictures { Man, Woman, Daughter, Son, All }
+enum class Picture { Man, Woman, Daughter, Son, All }
 
 @OptIn(ExperimentalAnimationApi::class)
 @Preview
 @Composable
 fun AnimationDemo() {
+    /**
+     * Count to keep track of the horizontal sliding counter
+     */
     var count by remember { mutableStateOf(0) }
+
+    /**
+     * Flag to expand or shrink the text content
+     */
     var expand by remember { mutableStateOf(false) }
 
     /**
      * Enum variable to select a picture to crossfade to
      */
-    var pick by remember { mutableStateOf(Pictures.Man) }
+    var pick by remember { mutableStateOf(Picture.Man) }
 
 
     Column(
@@ -62,15 +66,20 @@ fun AnimationDemo() {
             .shadow(2.dp)
     ) {
         Column (Modifier
-            .fillMaxHeight(0.4f)){
-            Text(stringResource(id = R.string.animated_content_sample_1), Modifier.padding(8.dp))
+            .fillMaxHeight(0.4f)
+            .padding(8.dp)
+            ){
+            Text(stringResource(id = R.string.animated_content_sample_1), Modifier.padding(8.dp),
+            style = MaterialTheme.typography.h6)
             Divider()
 
             Row(
                 Modifier
                     .fillMaxWidth()
                     .fillMaxHeight()
-                    .padding(8.dp),
+                    .padding(8.dp)
+                    .background(Color.Yellow)
+                ,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
 
@@ -84,19 +93,7 @@ fun AnimationDemo() {
                 }
 
                 //Add AnimatedContent here around Box
-                AnimatedContent(targetState = count,
-                transitionSpec = {
-                    if (targetState > initialState){
-//                        slideIntoContainer(AnimatedContentScope.SlideDirection.Start) with slideOutOfContainer(
-//                            AnimatedContentScope.SlideDirection.Start, targetOffset = {offset -> -offset})
-                        slideInHorizontally({width -> width}) with slideOutHorizontally({width -> -width})
-                    }
-                    else {
-//                        slideIntoContainer(AnimatedContentScope.SlideDirection.End) with slideOutOfContainer(
-//                            AnimatedContentScope.SlideDirection.End)
-                        slideInHorizontally({width -> -width}) with slideOutHorizontally({width -> width})
-                    }
-                }) { count ->
+                Counter(count) { count ->
                     Box(
                         Modifier
                             .weight(1f)
@@ -136,28 +133,20 @@ fun AnimationDemo() {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     stringResource(id = R.string.animated_content_sample_2),
-                    Modifier.padding(8.dp)
+                    Modifier.padding(8.dp), style = MaterialTheme.typography.h6
                 )
                 Text(stringResource(id = R.string.expand), Modifier.padding(8.dp))
                 Checkbox(checked = expand, onCheckedChange = { expand = !expand })
             }
             Divider()
-            AnimatedContent(targetState = expand,
-                transitionSpec = {
-                    expandIn() with shrinkOut() using
-                            SizeTransform { initialSize, targetSize ->
-                                keyframes {
-                                    durationMillis = 500
-                                    IntSize(initialSize.width/2, initialSize.height/2) at 150 }
-                            }
-                                .apply { }
-                }
-            ) {
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.LightGray)) {
                 if (!expand) {
                     Box(
                         Modifier
                             .wrapContentSize()
-                            .background(Color.Cyan)
+
                     ) {
                         Text("short text", Modifier.padding(8.dp))
                     }
@@ -166,10 +155,9 @@ fun AnimationDemo() {
                         Modifier
                             .wrapContentHeight()
                             .fillMaxWidth()
-                            .background(Color.Cyan)
                     ) {
                         Text(
-                            "Long text\n Long text line \n Long text line 3",
+                            "Long text\nLong text line\nLong text line 3",
                             Modifier.padding(8.dp)
                         )
                     }
@@ -178,82 +166,87 @@ fun AnimationDemo() {
 
         }
 
-
         Column(
-            Modifier
+            modifier = Modifier
                 .fillMaxHeight()
                 .fillMaxWidth()
                 .padding(8.dp)
-                .background(Color.LightGray)
+
         ) {
 
-            Text(stringResource(id = R.string.crossfade_animation_sample), Modifier.padding(8.dp))
+            Text(stringResource(id = R.string.crossfade_animation_sample), Modifier.padding(8.dp),
+                style = MaterialTheme.typography.h6)
             Divider()
+        MyBox(targetState = pick, modifier = Modifier
+            .background(Color.Blue)
+            .clickable{
+               val items = Picture.values()
+               val nextItem = if(pick.ordinal < items.size - 1) items[pick.ordinal + 1] else items[0]
+               pick = nextItem
+            }) { targetState ->
 
-            Crossfade(
-                targetState = pick,
-                Modifier
-                    .fillMaxSize()
-                    .background(Color.Blue)
-                    .padding(8.dp)
-                    .align(Alignment.CenterHorizontally)
-                    .clickable {
-                        val items = Pictures.values()
-                        val newIndex = if (pick.ordinal < items.size - 1) pick.ordinal + 1 else 0
-                        pick = items[newIndex]
-                    },
-                animationSpec = spring()
+            Box(Modifier.fillMaxSize()) {
+                Text(
+                    targetState.name,
+                    Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp),
+                    fontSize = 30.sp, fontWeight = FontWeight.Bold
+                )
+                when (targetState) {
+                    Picture.Man -> {
+                        Image(painterResource(id = R.drawable.professor), null)
+                    }
 
-            ) { targetState ->
+                    Picture.Woman -> {
+                        Image(painterResource(id = R.drawable.woman), null)
 
-                Box(Modifier.fillMaxSize()) {
-                    Text(
-                        targetState.name,
-                        Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(8.dp),
-                        fontSize = 30.sp, fontWeight = FontWeight.Bold
-                    )
-                    when (targetState) {
-                        Pictures.Man -> {
-                            Image(painterResource(id = R.drawable.professor), null)
-                        }
+                    }
 
-                        Pictures.Woman -> {
-                            Image(painterResource(id = R.drawable.woman), null)
+                    Picture.Daughter -> {
+                        Image(painterResource(id = R.drawable.daughter), null)
+                    }
 
-                        }
+                    Picture.Son -> {
+                        Image(painterResource(id = R.drawable.son), null)
+                    }
 
-                        Pictures.Daughter -> {
-                            Image(painterResource(id = R.drawable.daughter), null)
-                        }
-
-                        Pictures.Son -> {
-                            Image(painterResource(id = R.drawable.son), null)
-                        }
-
-                        Pictures.All -> {
-                            Row(Modifier.fillMaxSize()) {
-                                val pics = listOf(
-                                    R.drawable.professor, R.drawable.woman,
-                                    R.drawable.daughter, R.drawable.son
+                    Picture.All -> {
+                        Row(Modifier.fillMaxSize()) {
+                            val pics = listOf(
+                                R.drawable.professor, R.drawable.woman,
+                                R.drawable.daughter, R.drawable.son
+                            )
+                            for (pic in pics)
+                                Image(
+                                    painterResource(id = pic),
+                                    null,
+                                    Modifier
+                                        .weight(1f)
+                                        .align(Alignment.Bottom)
+                                        .graphicsLayer {
+                                            if (pic == R.drawable.professor) rotationY = 180f
+                                        }
                                 )
-                                for (pic in pics)
-                                    Image(
-                                        painterResource(id = pic),
-                                        null,
-                                        Modifier
-                                            .weight(1f)
-                                            .align(Alignment.Bottom)
-                                            .graphicsLayer { if (pic == R.drawable.professor) rotationY = 180f }
-                                    )
-                            }
                         }
                     }
                 }
             }
 
         }
+        }
 
     }
+}
+
+@Composable
+fun Counter(initialCount: Int, content: @Composable (count: Int) -> Unit) {
+    Box(){
+        content.invoke(initialCount)
+    }
+}
+
+@Composable
+fun MyBox(modifier: Modifier = Modifier, targetState: Picture, content: @Composable (state: Picture) -> Unit) {
+    Surface(modifier = modifier){ content.invoke(targetState) }
 }
