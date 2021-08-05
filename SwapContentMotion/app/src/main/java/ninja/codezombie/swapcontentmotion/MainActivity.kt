@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.*
-import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -68,9 +68,10 @@ fun AnimationDemo() {
             .padding(16.dp)
             .shadow(2.dp)
     ) {
-        Column (Modifier
-            .fillMaxHeight(0.4f)
-            .padding(8.dp)
+        Column (
+            Modifier
+                .fillMaxHeight(0.4f)
+                .padding(8.dp)
             ){
             Text(stringResource(id = R.string.animated_content_sample_1), Modifier.padding(8.dp),
             style = MaterialTheme.typography.h6)
@@ -96,6 +97,25 @@ fun AnimationDemo() {
                 }
 
                 //Add AnimatedContent here around Box
+                AnimatedContent(targetState = count,
+                transitionSpec = {
+                    if(targetState > initialState) {
+                        slideInHorizontally({ width -> -width }) + fadeIn() with slideOutHorizontally(
+                            { width -> width }) + fadeOut() using
+                                SizeTransform { initialSize, targetSize ->
+                                    keyframes {
+                                        durationMillis = 300
+                                        IntSize(
+                                            initialSize.width / 2,
+                                            targetSize.height / 2
+                                        ) at 150
+                                    }
+                                }
+                    }
+                    else {
+                        slideInHorizontally({width -> width}) + fadeIn() with slideOutHorizontally({width -> -width}) + fadeOut()
+                    }
+                }) {
                     Box(
                         Modifier
                             .weight(1f)
@@ -110,6 +130,7 @@ fun AnimationDemo() {
                             modifier = Modifier.padding(8.dp)
                         )
                     }
+                }
 
                 IconButton(onClick = { count++ },
                 modifier = Modifier
@@ -140,27 +161,42 @@ fun AnimationDemo() {
                 Checkbox(checked = expand, onCheckedChange = { expand = !expand })
             }
             Divider()
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.LightGray)) {
-                if (!expand) {
-                    Box(
-                        Modifier
-                            .wrapContentSize()
+            AnimatedContent(targetState = expand,
+            transitionSpec = {
+                slideIntoContainer(towards = AnimatedContentScope.SlideDirection.Up, animationSpec =
+                spring(Spring.DampingRatioHighBouncy)) + fadeIn() with slideOutOfContainer(
+                    AnimatedContentScope.SlideDirection.Up) + fadeOut() using
+                        SizeTransform { initialSize, targetSize ->
+                            keyframes {
+                                durationMillis = 300
+                                IntSize(initialSize.width, targetSize.height) at 150
+                            }
+                        }
+            }) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.LightGray)
+                ) {
+                    if (!expand) {
+                        Box(
+                            Modifier
+                                .wrapContentSize()
 
-                    ) {
-                        Text("short text", Modifier.padding(8.dp))
-                    }
-                } else {
-                    Box(
-                        Modifier
-                            .wrapContentHeight()
-                            .fillMaxWidth()
-                    ) {
-                        Text(
-                            "Long text\nLong text line\nLong text line 3",
-                            Modifier.padding(8.dp)
-                        )
+                        ) {
+                            Text("short text", Modifier.padding(8.dp))
+                        }
+                    } else {
+                        Box(
+                            Modifier
+                                .wrapContentHeight()
+                                .fillMaxWidth()
+                        ) {
+                            Text(
+                                "Long text\nLong text line\nLong text line 3",
+                                Modifier.padding(8.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -182,55 +218,61 @@ fun AnimationDemo() {
 
             val targetState = pick
 
-            Box(Modifier.fillMaxSize()
-                .clickable{
-                    val items = Picture.values()
-                    val nextItem = if(pick.ordinal < items.size - 1) items[pick.ordinal + 1] else items[0]
-                    pick = nextItem
-                }) {
-                Text(
-                    targetState.name,
+            Crossfade(targetState = pick,
+            animationSpec = tween(durationMillis = 1000,
+            easing = LinearEasing)) {picture ->
+                Box(
                     Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(8.dp)
-                       ,
-                    fontSize = 30.sp, fontWeight = FontWeight.Bold
-                )
-                when (targetState) {
-                    Picture.Man -> {
-                        Image(painterResource(id = R.drawable.professor), null)
-                    }
+                        .fillMaxSize()
+                        .clickable {
+                            val items = Picture.values()
+                            val nextItem =
+                                if (picture.ordinal < items.size - 1) items[picture.ordinal + 1] else items[0]
+                            pick = nextItem
+                        }) {
+                    Text(
+                        targetState.name,
+                        Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(8.dp),
+                        fontSize = 30.sp, fontWeight = FontWeight.Bold
+                    )
+                    when (targetState) {
+                        Picture.Man -> {
+                            Image(painterResource(id = R.drawable.professor), null)
+                        }
 
-                    Picture.Woman -> {
-                        Image(painterResource(id = R.drawable.woman), null)
+                        Picture.Woman -> {
+                            Image(painterResource(id = R.drawable.woman), null)
 
-                    }
+                        }
 
-                    Picture.Daughter -> {
-                        Image(painterResource(id = R.drawable.daughter), null)
-                    }
+                        Picture.Daughter -> {
+                            Image(painterResource(id = R.drawable.daughter), null)
+                        }
 
-                    Picture.Son -> {
-                        Image(painterResource(id = R.drawable.son), null)
-                    }
+                        Picture.Son -> {
+                            Image(painterResource(id = R.drawable.son), null)
+                        }
 
-                    Picture.All -> {
-                        Row(Modifier.fillMaxSize()) {
-                            val pics = listOf(
-                                R.drawable.professor, R.drawable.woman,
-                                R.drawable.daughter, R.drawable.son
-                            )
-                            for (pic in pics)
-                                Image(
-                                    painterResource(id = pic),
-                                    null,
-                                    Modifier
-                                        .weight(1f)
-                                        .align(Alignment.Bottom)
-                                        .graphicsLayer {
-                                            if (pic == R.drawable.professor) rotationY = 180f
-                                        }
+                        Picture.All -> {
+                            Row(Modifier.fillMaxSize()) {
+                                val pics = listOf(
+                                    R.drawable.professor, R.drawable.woman,
+                                    R.drawable.daughter, R.drawable.son
                                 )
+                                for (pic in pics)
+                                    Image(
+                                        painterResource(id = pic),
+                                        null,
+                                        Modifier
+                                            .weight(1f)
+                                            .align(Alignment.Bottom)
+                                            .graphicsLayer {
+                                                if (pic == R.drawable.professor) rotationY = 180f
+                                            }
+                                    )
+                            }
                         }
                     }
                 }
