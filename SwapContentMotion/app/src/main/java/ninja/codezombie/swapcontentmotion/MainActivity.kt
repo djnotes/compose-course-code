@@ -39,6 +39,9 @@ class MainActivity : ComponentActivity() {
 
 enum class Picture { Man, Woman, Daughter, Son, All }
 
+/**
+ * Composable to show Crossfade and AnimatedContent animations
+ */
 @OptIn(ExperimentalAnimationApi::class)
 @Preview
 @Composable
@@ -93,7 +96,6 @@ fun AnimationDemo() {
                 }
 
                 //Add AnimatedContent here around Box
-                Counter(count) { count ->
                     Box(
                         Modifier
                             .weight(1f)
@@ -108,7 +110,6 @@ fun AnimationDemo() {
                             modifier = Modifier.padding(8.dp)
                         )
                     }
-                }
 
                 IconButton(onClick = { count++ },
                 modifier = Modifier
@@ -177,20 +178,22 @@ fun AnimationDemo() {
             Text(stringResource(id = R.string.crossfade_animation_sample), Modifier.padding(8.dp),
                 style = MaterialTheme.typography.h6)
             Divider()
-        MyBox(targetState = pick, modifier = Modifier
-            .background(Color.Blue)
-            .clickable{
-               val items = Picture.values()
-               val nextItem = if(pick.ordinal < items.size - 1) items[pick.ordinal + 1] else items[0]
-               pick = nextItem
-            }) { targetState ->
 
-            Box(Modifier.fillMaxSize()) {
+
+            val targetState = pick
+
+            Box(Modifier.fillMaxSize()
+                .clickable{
+                    val items = Picture.values()
+                    val nextItem = if(pick.ordinal < items.size - 1) items[pick.ordinal + 1] else items[0]
+                    pick = nextItem
+                }) {
                 Text(
                     targetState.name,
                     Modifier
                         .align(Alignment.TopEnd)
-                        .padding(8.dp),
+                        .padding(8.dp)
+                       ,
                     fontSize = 30.sp, fontWeight = FontWeight.Bold
                 )
                 when (targetState) {
@@ -234,19 +237,6 @@ fun AnimationDemo() {
             }
 
         }
-        }
 
     }
-}
-
-@Composable
-fun Counter(initialCount: Int, content: @Composable (count: Int) -> Unit) {
-    Box(){
-        content.invoke(initialCount)
-    }
-}
-
-@Composable
-fun MyBox(modifier: Modifier = Modifier, targetState: Picture, content: @Composable (state: Picture) -> Unit) {
-    Surface(modifier = modifier){ content.invoke(targetState) }
 }
