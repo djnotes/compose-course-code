@@ -5,4 +5,6 @@
     <string name="animate_dp">Animating Dp</string>
     <string name="animate_float">Animate Float</string>
     <string name="animate_value">Animate Value</string>
+    <string name="like">Like</string>
+    <string name="thumb_up">Thumb Up</string>
 </resources>
