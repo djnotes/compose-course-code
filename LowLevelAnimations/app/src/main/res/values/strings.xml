@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Low Level Animations</string>
+    <string name="infinite_transition">Infinite Transition</string>
+    <string name="animating_color">Animate Color</string>
+    <string name="animate_dp">Animating Dp</string>
+    <string name="animate_float">Animate Float</string>
+    <string name="animate_value">Animate Value</string>
+    <string name="like">Like</string>
+    <string name="thumb_up">Thumb Up</string>
+</resources>

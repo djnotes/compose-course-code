@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Swap Content Motion</string>
+    <string name="animated_content_sample_1">Animated Content: Sample 1</string>
+    <string name="animated_content_sample_2">Animated Content Sample 2</string>
+    <string name="crossfade_animation_sample">Crossfade Animation Sample</string>
+    <string name="expand">Expand</string>
+</resources>
