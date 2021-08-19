@@ -1,0 +1,6 @@
+<resources>
+
+    <string name="app_name">Compose Transitions</string>
+    <string name="connect">Connect</string>
+    <string name="disconnect">Disconnect</string>
+</resources>

@@ -1,4 +1,0 @@
-<resources>
-    <string name="app_name">AnimatedContent Draft</string>
-    <string name="lorem_ipsum">Lorem ipsum. This is some text meant to fill in some place as placeholder for more content to come. It is supposed to be simple, but long enough to showcase the role expected from a text portion of UI. So, in short, you should not be worried about the content. Content can be irrelevant. What matters is that we are doing animation and especially content transitions in terms of AnimatedContent.</string>
-</resources>
