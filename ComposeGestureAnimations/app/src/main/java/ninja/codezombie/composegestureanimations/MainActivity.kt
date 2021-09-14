@@ -4,7 +4,10 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.*
+import androidx.compose.animation.shrinkOut
 import androidx.compose.animation.splineBasedDecay
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -33,6 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -41,6 +45,7 @@ import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
 class MainActivity : ComponentActivity() {
+    @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -51,6 +56,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@ExperimentalAnimationApi
 @Preview
 @Composable
 fun GestureAnimationDemo() {
@@ -110,7 +116,13 @@ fun GestureAnimationDemo() {
         ){
             var dismissed by remember{mutableStateOf(false)}
 
-            if (!dismissed) {
+            this@Column.AnimatedVisibility (!dismissed,
+            exit = shrinkOut(
+                shrinkTowards = Alignment.TopCenter,
+                targetSize = {size -> IntSize(size.width, 0) },
+                animationSpec = tween(500)
+            ),
+                ) {
                 Text(stringResource(R.string.swipe_to_dismiss), style = MaterialTheme.typography.h2,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
