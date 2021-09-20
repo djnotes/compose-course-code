@@ -67,9 +67,7 @@ fun MyScreens() {
             E_Screen()
         }
 
-        //TODO: Add route to show image
 
-        //TODO: Add route to show greeting
     }
 }
 
@@ -79,7 +77,6 @@ fun HomeScreen(navController: NavHostController) {
         .fillMaxSize()
         .background(Color.Red),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
     ) {
 
         Button(onClick = {navController.navigate("b_route")},
@@ -110,7 +107,6 @@ fun HomeScreen(navController: NavHostController) {
         ) {
             Row(modifier = Modifier
                 .fillMaxWidth()
-                .selectableGroup()
                 .align(Alignment.CenterHorizontally)
             ) {
                 val images = listOf(R.drawable.pineapple, R.drawable.apple, R.drawable.banana)
@@ -229,37 +225,4 @@ fun E_Screen() {
     }
 }
 
-/**
- * Composable to show the result of user's selection
- */
-@Composable
-fun ShowScreen(imageResource: Int, scale: Float) {
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .padding(8.dp)
-        .shadow(2.dp)
-    ) {
-       Image(painter = painterResource(imageResource), contentDescription = null, contentScale = ContentScale.Inside,
-       modifier = Modifier
-           .scale(scale)
-           .align(Alignment.Center)
-       )
-    }
-}
 
-/**
- * Greet the user with the given name
- */
-@Composable
-fun GreetingScreen(name: String) {
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .padding(8.dp)
-    ) {
-        Text("Welcome $name", style = MaterialTheme.typography.h1,
-        modifier = Modifier
-            .padding(8.dp)
-            .align(Alignment.Center)
-        )
-    }
-}
