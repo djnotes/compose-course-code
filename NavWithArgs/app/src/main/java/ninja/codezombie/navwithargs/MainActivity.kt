@@ -24,8 +24,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
 import ninja.codezombie.navwithargs.ui.theme.NavWithArgsTheme
 
@@ -42,9 +44,29 @@ class MainActivity : ComponentActivity() {
                             SelectionScreen(navController = navController)
                         }
 
-                        //TODO: Add route to show image
+                        composable("show/{imageResource}/{scale}?caption={caption}",
+                            arguments = listOf(
+                                navArgument("imageResource"){type = NavType.IntType},
+                                navArgument("scale"){type = NavType.FloatType},
+                                navArgument("caption"){defaultValue = "Selected Image"}
+                            )
+                        ){ backStackEntry ->
+                            val image = backStackEntry.arguments?.getInt("imageResource")
+                            val scale = backStackEntry.arguments?.getFloat("scale")
+                            val caption = backStackEntry.arguments?.getString("caption")
+                            if (image != null && scale != null) {
+                                ShowScreen(imageResource = image, scale = scale, caption = caption.toString())
+                            }
+                        }
 
-                        //TODO: Add route to show greeting
+
+                        composable("greet?name={name}",
+                           arguments = listOf(
+                               navArgument("name"){type = NavType.StringType; defaultValue = "John Doe"}
+                           )
+                        ){ backStackEntry ->
+                            GreetingScreen(name = backStackEntry.arguments?.getString("name").toString())
+                        }
 
                     }
                 }
@@ -68,13 +90,14 @@ Column(modifier = Modifier
             .align(Alignment.CenterHorizontally)
             .padding(8.dp)
         )
+        val images = listOf(R.drawable.pineapple, R.drawable.apple, R.drawable.banana)
+        var selectedImage by remember{ mutableStateOf(0) }
+
 
         Row(modifier = Modifier
             .fillMaxWidth()
             .align(Alignment.CenterHorizontally)
         ) {
-            val images = listOf(R.drawable.pineapple, R.drawable.apple, R.drawable.banana)
-            var selectedImage by remember{ mutableStateOf(0) }
             for(i in images.indices){
                 val image = images[i]
                 Image(painterResource(id = image), contentDescription = null, modifier = Modifier
@@ -100,8 +123,17 @@ Column(modifier = Modifier
             .padding(horizontal = 8.dp))
 
         Text("Scale: $slide", modifier = Modifier.padding(8.dp))
+
+        val (caption, onCaptionChange) = remember{mutableStateOf("")}
+        OutlinedTextField(value = caption, onValueChange = onCaptionChange, label = {
+            Text("Image Caption")
+        }, modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth()
+        )
+
         Button(onClick = {
-            //TODO: Pass image and scale as arguments to the show route
+                         navController.navigate("show/${images[selectedImage]}/$slide?caption=$caption")
         }, modifier = Modifier
             .align(Alignment.CenterHorizontally)
             .padding(8.dp)
@@ -130,7 +162,9 @@ Column(modifier = Modifier
 
         )
 
-        Button(onClick = {  }, modifier = Modifier
+        Button(onClick = {
+                         navController.navigate("greet?name=$name")
+        }, modifier = Modifier
             .align(Alignment.CenterHorizontally)
             .padding(8.dp)
         ) {
@@ -153,7 +187,7 @@ Column(modifier = Modifier
  * Composable to show the result of user's selection
  */
 @Composable
-fun ShowScreen(imageResource: Int, scale: Float) {
+fun ShowScreen(imageResource: Int, scale: Float, caption: String) {
     Box(modifier = Modifier
         .fillMaxSize()
         .padding(8.dp)
@@ -163,6 +197,11 @@ fun ShowScreen(imageResource: Int, scale: Float) {
             modifier = Modifier
                 .scale(scale)
                 .align(Alignment.Center)
+        )
+        Text(caption, style = MaterialTheme.typography.h2,
+        modifier = Modifier
+            .align(Alignment.Center)
+            .padding(8.dp)
         )
     }
 }
