@@ -21,10 +21,8 @@ import androidx.constraintlayout.widget.Placeholder
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.*
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import ninja.codezombie.composebottomnavigation.ui.theme.ComposeBottomNavigationTheme
 
 class MainActivity : ComponentActivity() {
@@ -42,7 +40,8 @@ class MainActivity : ComponentActivity() {
 val mainScreens = listOf(
     Screen.Home,
     Screen.Profile,
-    Screen.Notifications
+    Screen.Notifications,
+    Screen.More
 )
 
 @Preview
@@ -66,8 +65,50 @@ fun MainScreen() {
             composable(Screen.Notifications.route){
                 NotificationsScreen()
             }
+            
+            navigation(route = Screen.More.route, startDestination = "more-home"){
+                composable("more-home"){
+                   MoreScreen(nc)
+                }
+
+                composable(Screen.Gallery.route){
+                    GalleryScreen()
+                }
+
+                composable(Screen.Settings.route){
+                    SettingsScreen()
+                }
+
+            }
         }
 
+    }
+}
+
+@Composable
+fun SettingsScreen() {
+    Placeholder(title = Screen.Settings.title, icon = Screen.Settings.icon)
+}
+
+@Composable
+fun GalleryScreen() {
+    Placeholder(title = Screen.Gallery.title, icon = Screen.Gallery.icon)
+}
+
+@Composable
+fun MoreScreen(nc: NavHostController) {
+    val subScreens = listOf(
+        Screen.Gallery,
+        Screen.Settings
+    )
+    Placeholder(title = Screen.More.title, icon = Screen.More.icon){
+        for(screen in subScreens){
+            Button(onClick = {
+                nc.navigate(screen.route)
+            }, modifier = Modifier.padding(16.dp)) {
+                Text(screen.title)
+            }
+        }
     }
 }
 
