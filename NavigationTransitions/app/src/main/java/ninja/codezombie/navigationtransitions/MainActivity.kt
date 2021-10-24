@@ -42,6 +42,7 @@ class MainActivity : ComponentActivity() {
 val screens = listOf(
     Screen.Home,
     Screen.Cart,
+    Screen.Favorites,
     Screen.More,
 )
 
