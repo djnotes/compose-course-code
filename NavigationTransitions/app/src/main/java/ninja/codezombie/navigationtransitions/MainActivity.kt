@@ -6,8 +6,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,10 +23,7 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.core.net.toUri
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.*
 import ninja.codezombie.navigationtransitions.ui.theme.NavigationTransitionsTheme
 
 class MainActivity : ComponentActivity() {
@@ -50,7 +49,8 @@ val screens = listOf(
 @Composable
 fun MainScreen() {
     val navController = rememberNavController() //TODO 1: Replace with rememberAnimatedNavController
-    val currDest = remember{navController.currentBackStackEntry?.destination}
+    val currBackStackEntry by navController.currentBackStackEntryAsState()
+    val currDest = currBackStackEntry?.destination
     Scaffold(bottomBar = {
         BottomNavigation{
             screens.forEach {screen->
@@ -85,10 +85,11 @@ fun MainScreen() {
                 composable(Screen.Profile.route){
                     MyScreen(title = Screen.Profile.title, icon = Screen.Profile.icon){
                         val ctx = LocalContext.current
-                        Column(Modifier
-                            .align(Alignment.TopCenter)
-                            .padding(8.dp)
-                            .padding(top = 32.dp),
+                        Column(
+                            Modifier
+                                .align(Alignment.TopCenter)
+                                .padding(8.dp)
+                                .padding(top = 32.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ){
                             Button(onClick = {
@@ -111,6 +112,23 @@ fun MainScreen() {
                             }){
                                 Text("Website")
                             }
+
+                            Column(modifier = Modifier
+                                .padding(4.dp)
+                                .background(Color.LightGray, RoundedCornerShape(4.dp))
+                            ){
+                                Text("Email: info@example.com", Modifier
+                                    .padding(4.dp)
+                                )
+                                Text("JOHN \"GULLIBLE\" DOE\n" +
+                                        "CENTER FOR FINANCIAL ASSISTANCE\n" +
+                                        "421 E DRACHMAN\n" +
+                                        "TUCSON AZ 85705-7598\n" +
+                                        "USA\n"
+                                    , Modifier
+                                        .padding(4.dp))
+                            }
+
                         }
                     }
                 }
@@ -119,21 +137,7 @@ fun MainScreen() {
                 }
             }
             composable(Screen.Favorites.route){
-                MyScreen(Screen.Favorites.title, Screen.Favorites.icon){
-                    Column(modifier = Modifier
-                        .align(Alignment.TopCenter)){
-                        Text("Email: info@example.com", Modifier
-                            .padding(8.dp)
-                        )
-                        Text("   JOHN \"GULLIBLE\" DOE\n" +
-                                "   CENTER FOR FINANCIAL ASSISTANCE\n" +
-                                "   421 E DRACHMAN\n" +
-                                "   TUCSON AZ 85705-7598\n" +
-                                "   USA\n"
-                            , Modifier
-                                .padding(8.dp))
-                    }
-                }
+                MyScreen(Screen.Favorites.title, Screen.Favorites.icon)
             }
 
         }
