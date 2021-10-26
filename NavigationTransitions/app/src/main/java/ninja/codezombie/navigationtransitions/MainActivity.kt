@@ -4,6 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.*
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,15 +22,22 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.net.toUri
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.*
+import androidx.navigation.compose.currentBackStackEntryAsState
+//import androidx.navigation.compose.*
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
+import com.google.accompanist.navigation.animation.navigation
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import ninja.codezombie.navigationtransitions.ui.theme.NavigationTransitionsTheme
 
 class MainActivity : ComponentActivity() {
+    @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -45,10 +56,11 @@ val screens = listOf(
     Screen.More,
 )
 
+@ExperimentalAnimationApi
 @Preview
 @Composable
 fun MainScreen() {
-    val navController = rememberNavController() //TODO 1: Replace with rememberAnimatedNavController
+    val navController = rememberAnimatedNavController()
     val currBackStackEntry by navController.currentBackStackEntryAsState()
     val currDest = currBackStackEntry?.destination
     Scaffold(bottomBar = {
@@ -72,16 +84,54 @@ fun MainScreen() {
             }
         }
     }){
-        NavHost(navController = navController,
-            startDestination = Screen.Home.route
-        ){ //TODO 2: Replace with AnimatedNavHost
-            composable(Screen.Home.route){ //TODO 3: Replace with com.google.accompanist.navigation.animation.composable
+        AnimatedNavHost(navController = navController,
+            startDestination = Screen.Home.route,
+            enterTransition = {i,t ->
+                when(t.destination.route){
+                    Screen.Favorites.route -> slideInVertically(initialOffsetY = {height -> -height}, animationSpec = spring(
+                        Spring.DampingRatioMediumBouncy))
+                    else -> slideInHorizontally(initialOffsetX = {width -> -width}, animationSpec = tween(1000))
+
+                }
+            },
+            exitTransition = {i, t ->
+                slideOutHorizontally(targetOffsetX = {width -> width}, animationSpec = tween(1000))
+            },
+            popExitTransition = {i,t ->
+                shrinkOut(shrinkTowards = Alignment.Center, targetSize = {size -> IntSize(0, size.height) }, animationSpec = tween(300))
+            },
+            popEnterTransition = {i,t ->
+                slideIntoContainer(towards = AnimatedContentScope.SlideDirection.Up, animationSpec = tween(1000, 300))
+            }
+        ){
+            composable(Screen.Home.route,
+            exitTransition = {i,t ->
+                when(t.destination.route){
+                    Screen.Cart.route -> shrinkVertically(shrinkTowards = Alignment.Bottom, targetHeight = {height -> 0}, animationSpec = tween(300))
+                    else -> null
+                }
+
+            }){
                 MyScreen(Screen.Home.title, Screen.Home.icon)
             }
-            composable(Screen.Cart.route){
+            composable(Screen.Cart.route,
+            enterTransition = {i, t ->
+                when(i.destination.route){
+                    Screen.Home.route -> expandIn(expandFrom = Alignment.Center, initialSize = {size -> IntSize(0, size.height)}, animationSpec = tween(1000, 300))
+                    else -> null
+                }
+            }){
                 MyScreen(Screen.Cart.title, Screen.Cart.icon)
             }
-            navigation(route = Screen.More.route, startDestination = Screen.Profile.route){ //TODO 4: Replace navigation with com.google.accompanist.navigation.animation.navigation
+            navigation(route = Screen.More.route, startDestination = Screen.Profile.route,
+                enterTransition = {i,t ->
+                    fadeIn(animationSpec = tween(1000))
+                },
+                exitTransition = {i, t ->
+                    fadeOut(animationSpec = tween(1000))
+                },
+
+            ){
                 composable(Screen.Profile.route){
                     MyScreen(title = Screen.Profile.title, icon = Screen.Profile.icon){
                         val ctx = LocalContext.current
@@ -89,7 +139,7 @@ fun MainScreen() {
                             Modifier
                                 .align(Alignment.TopCenter)
                                 .padding(8.dp)
-                                .padding(top = 32.dp),
+                                ,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ){
                             Button(onClick = {
@@ -149,10 +199,12 @@ fun MyScreen(title: String, icon: ImageVector, extra_content: @Composable BoxSco
     Box(
         Modifier
             .fillMaxSize()
-            .background(Color.Magenta)
+            .background(Color.Yellow)
     ){
-        Icon(icon, title, Modifier
-            .fillMaxSize(0.3f)
+        Icon(icon, title,
+            tint = Color.Red
+            , modifier = Modifier
+            .fillMaxSize(0.5f)
             .align(Alignment.Center)
         )
         Text(title, style = MaterialTheme.typography.h2, fontWeight = FontWeight.Bold,
