@@ -41,7 +41,9 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     NavHost(navController = navController, startDestination = "home"){
                         composable("home"){
-                            SelectionScreen(navController = navController)
+                            SelectionScreen(onNavigate = {route->
+                                navController.navigate(route)
+                            })
                         }
 
                         composable("show/{imageResource}/{scale}?caption={caption}",
@@ -76,7 +78,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun SelectionScreen(navController: NavHostController) {
+fun SelectionScreen(onNavigate: (String) -> Unit) {
 Column(modifier = Modifier
     .fillMaxSize()
 
@@ -133,7 +135,8 @@ Column(modifier = Modifier
         )
 
         Button(onClick = {
-                         navController.navigate("show/${images[selectedImage]}/$slide?caption=$caption")
+//                         navController.navigate("show/${images[selectedImage]}/$slide?caption=$caption")
+                         onNavigate("show/${images[selectedImage]}/$slide?caption=$caption")
         }, modifier = Modifier
             .align(Alignment.CenterHorizontally)
             .padding(8.dp)
@@ -163,7 +166,8 @@ Column(modifier = Modifier
         )
 
         Button(onClick = {
-                         navController.navigate("greet?name=$name")
+//                         navController.navigate("greet?name=$name")
+                         onNavigate("greet?name=$name")
         }, modifier = Modifier
             .align(Alignment.CenterHorizontally)
             .padding(8.dp)
