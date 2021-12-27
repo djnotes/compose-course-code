@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">OSM Map</string>
+    <string name="select_a_region_from_dropdown">Select a region from the dropdown</string>
+</resources>

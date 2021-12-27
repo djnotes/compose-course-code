@@ -185,8 +185,6 @@ Column(modifier = Modifier
 
 }
 
-
-
 /**
  * Composable to show the result of user's selection
  */
