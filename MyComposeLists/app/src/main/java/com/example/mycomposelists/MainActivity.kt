@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
@@ -15,9 +16,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,6 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mycomposelists.data.Profile
 import com.example.mycomposelists.ui.theme.MyComposeListsTheme
+import kotlinx.coroutines.launch
 
 val ProfilesList = listOf(
     Profile("John", R.drawable.john),
@@ -76,7 +78,8 @@ class MainActivity : ComponentActivity() {
 //                        MyHorizontalList()
 //                        MyVerticalListUi()
 //                    }
-                    MyGrid()
+//                    MyGrid()
+                    MyVerticalListUi()
                 }
             }
         }
@@ -97,63 +100,118 @@ fun DefaultPreview() {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, androidx.compose.animation.ExperimentalAnimationApi::class)
 @Composable
 fun MyVerticalListUi() {
     val ctx = LocalContext.current
-    LazyColumn(modifier = Modifier
-        .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ){
-//        stickyHeader {
-//            Text(stringResource(id = R.string.list_of_contacts), textAlign = TextAlign.Center,
-//            style = MaterialTheme.typography.h3, modifier = Modifier
-//                        .fillMaxWidth()
-//                    .background(Color.White)
-//                        .padding(4.dp)
-//            )
-//        }
-//
-        profilesGrouped.forEach {entry->
-            stickyHeader {
-                Text(entry.key.toString(), style = MaterialTheme.typography.h3,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .background(Color.Green)
-                )
-            }
-            entry.value.forEach { profile->
-                item {
-                    Row(modifier = Modifier
-                        .padding(16.dp)
-                        .clickable {
-                            Toast
-                                .makeText(ctx, "${profile.name} clicked", Toast.LENGTH_SHORT)
-                                .show()
-                        }
-                    )
-                    {
-                        Text(profile.name, modifier = Modifier
-                            .weight(1f)
-                            .align(Alignment.CenterVertically)
+    val listState = rememberLazyListState()
+    val showButton by remember{
+        derivedStateOf { listState.firstVisibleItemIndex > 0 }
+    }
+    val scope = rememberCoroutineScope()
 
-                            ,
-                            style = MaterialTheme.typography.h4
-                        )
-                        Image(painterResource(profile.picture), profile.name, modifier = Modifier
-                            .clip(RoundedCornerShape(100))
-                            .size(150.dp)
-                            ,
-                            contentScale = ContentScale.Crop
-                        )
+    Scaffold(
+        floatingActionButton = {
+            AnimatedVisibility(visible = showButton){
+                ExtendedFloatingActionButton(text = { Text("Jump To Top") },
+                    icon = {Icon(Icons.Default.KeyboardArrowUp, null)}
+                    ,onClick = {
+                    scope.launch {
+                        listState.animateScrollToItem(0)
                     }
-                }
+                })
             }
         }
+    ){
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            state = listState
+        ) {
 
+            stickyHeader {
+                Text(
+                    "First Visible Item Index: ${listState.firstVisibleItemIndex}\n" +
+                            "First Visible Item Scroll Offset: ${listState.firstVisibleItemScrollOffset}\n" +
+                            "Current Profile: ${ProfilesList[listState.firstVisibleItemIndex].name}",
+                    textAlign = TextAlign.Start,
+                    style = MaterialTheme.typography.subtitle1,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.Yellow)
+                        .padding(4.dp)
+                )
+            }
+
+            items(ProfilesList) { profile ->
+                Row(modifier = Modifier
+                    .background(Color.DarkGray)
+                    .padding(16.dp)
+                    .clickable {
+                        Toast
+                            .makeText(ctx, "${profile.name} clicked", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                )
+                {
+                    Text(
+                        profile.name, modifier = Modifier
+                            .weight(1f)
+                            .align(Alignment.CenterVertically),
+                        style = MaterialTheme.typography.h4
+                    )
+                    Image(
+                        painterResource(profile.picture), profile.name, modifier = Modifier
+                            .clip(RoundedCornerShape(100))
+                            .size(150.dp),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+            }
+//
+
+//        profilesGrouped.forEach {entry->
+//            stickyHeader {
+//                Text(entry.key.toString(), style = MaterialTheme.typography.h3,
+//                textAlign = TextAlign.Center,
+//                modifier = Modifier
+//                    .padding(8.dp)
+//                    .background(Color.Green)
+//                )
+//            }
+//            entry.value.forEach { profile->
+//                item {
+//                    Row(modifier = Modifier
+//                        .padding(16.dp)
+//                        .clickable {
+//                            Toast
+//                                .makeText(ctx, "${profile.name} clicked", Toast.LENGTH_SHORT)
+//                                .show()
+//                        }
+//                    )
+//                    {
+//                        Text(profile.name, modifier = Modifier
+//                            .weight(1f)
+//                            .align(Alignment.CenterVertically)
+//
+//                            ,
+//                            style = MaterialTheme.typography.h4
+//                        )
+//                        Image(painterResource(profile.picture), profile.name, modifier = Modifier
+//                            .clip(RoundedCornerShape(100))
+//                            .size(150.dp)
+//                            ,
+//                            contentScale = ContentScale.Crop
+//                        )
+//                    }
+//                }
+//            }
+//        }
+
+        }
     }
 }
 
@@ -194,8 +252,9 @@ fun MyGrid() {
                             .width(100.dp)
                             .height(150.dp)
                             .scale(
-                                animateFloatAsState(if (selectedItem == profile.id) 1.5f else 1.0f,
-                                animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
+                                animateFloatAsState(
+                                    if (selectedItem == profile.id) 1.5f else 1.0f,
+                                    animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
                                 )
                                     .value
                             )
