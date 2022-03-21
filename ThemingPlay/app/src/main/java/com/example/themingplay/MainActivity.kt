@@ -119,7 +119,7 @@ fun MainScreen() {
 @Preview(showSystemUi = true)
 @Composable
 fun MainScreenPreview() {
-    ThemingPlayTheme() {
+    ThemingPlayTheme{
         MainScreen()
     }
 }

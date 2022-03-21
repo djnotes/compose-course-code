@@ -10,6 +10,7 @@ import com.example.themingplay.R
 
 // Set of Material typography styles to start with
 val Typography = Typography(
+    defaultFontFamily = FontFamily(Font(R.font.handlee_regular)),
     body1 = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
