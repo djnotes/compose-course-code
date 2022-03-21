@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">Theming Play</string>
     <string name="welcome_to_my_app">Welcome to My App</string>
+    <string name="ready_lets_go">Ready? Let\'s Go</string>
+    <string name="about_us">About Us</string>
+    <string name="settings">Settings</string>
+    <string name="modal_drawer_body">Modal Drawer Body</string>
 
 </resources>

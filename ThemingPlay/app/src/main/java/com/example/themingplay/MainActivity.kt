@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,7 +29,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    Greeting("Android")
+                    MainScreen()
                 }
             }
         }
@@ -53,7 +54,8 @@ fun MainScreen() {
     Scaffold(
         topBar = {
             TopAppBar(contentPadding = PaddingValues(start = 16.dp)) {
-                Text(stringResource(id = R.string.app_name))
+                Text(stringResource(id = R.string.app_name), style = MaterialTheme.typography.subtitle1,
+                fontWeight = FontWeight.Bold)
             }
         },
         floatingActionButton = {
@@ -81,14 +83,35 @@ fun MainScreen() {
                 )
 
             }
+        },
+        drawerContent = {
+            Spacer(modifier = Modifier.height(150.dp))
+            Text(stringResource(R.string.about_us), modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+            )
+            Text(stringResource(R.string.settings), modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+            )
+
         }
     ) {
-        Box{
+        Column(verticalArrangement = Arrangement.Center) {
             Text(stringResource(R.string.welcome_to_my_app), style = MaterialTheme.typography.h2, textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
                 modifier = Modifier
-                    .padding(8.dp)
-                    .align(Alignment.Center)
+                    .padding(top = 32.dp)
+                    .align(Alignment.CenterHorizontally)
+
             )
+
+            Button(onClick = { /*TODO*/ }, modifier = Modifier
+                .padding(top = 32.dp)
+                .align(Alignment.CenterHorizontally)
+
+            ) {
+                Text(stringResource(R.string.ready_lets_go))
+            }
+
         }
     }
 }
@@ -96,7 +119,7 @@ fun MainScreen() {
 @Preview(showSystemUi = true)
 @Composable
 fun MainScreenPreview() {
-    ThemingPlayTheme(darkTheme = true) {
+    ThemingPlayTheme() {
         MainScreen()
     }
 }
