@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Custom Theming</string>
+    <string name="about_us">About Us</string>
+    <string name="settings">Settings</string>
+    <string name="welcome_to_my_app">Welcome To My App</string>
+    <string name="enter_your_name">Enter Your Name</string>
+    <string name="lets_go">Let\'s Go</string>
+    <string name="name">Name</string>
+    <string name="welcome_prefix">Welcome %1$s</string>
+    <string name="add_message">Add Message</string>
+    <string name="add_project">Add Project</string>
+    <string name="drawer_content">Drawer Content</string>
+</resources>
