@@ -202,9 +202,3 @@ fun MyScreenPreview() {
         MyScreen()
     }
 }
-
-@Preview
-@Composable
-fun SomePreview() {
-        MyScreen()
-}
