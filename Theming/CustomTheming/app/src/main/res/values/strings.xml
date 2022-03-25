@@ -10,4 +10,5 @@
     <string name="add_message">Add Message</string>
     <string name="add_project">Add Project</string>
     <string name="drawer_content">Drawer Content</string>
+    <string name="you_can_customize_or_replace_material_theme">You can customize or replace material theme</string>
 </resources>

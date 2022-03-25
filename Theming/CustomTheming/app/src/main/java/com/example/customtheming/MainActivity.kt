@@ -100,7 +100,10 @@ fun MyScreen() {
                 .padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ){
-                Text(stringResource(R.string.about_us), Modifier.padding(8.dp).weight(1f))
+                Text(stringResource(R.string.about_us),
+                    Modifier
+                        .padding(8.dp)
+                        .weight(1f))
                 Icon(Icons.Outlined.Info, null, Modifier.weight(1f))
             }
 
@@ -108,7 +111,10 @@ fun MyScreen() {
                 .padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ){
-                Text(stringResource(R.string.settings), Modifier.padding(8.dp).weight(1f))
+                Text(stringResource(R.string.settings),
+                    Modifier
+                        .padding(8.dp)
+                        .weight(1f))
                 Icon(Icons.Outlined.Settings, null, Modifier.weight(1f))
             }
 
@@ -188,6 +194,25 @@ fun MyScreen() {
                 Icon(Icons.Filled.Face, null)
 
             }
+
+            Surface(modifier = Modifier
+                .padding(8.dp)
+                .fillMaxSize(0.8f)
+                .align(Alignment.CenterHorizontally)
+                ,
+            elevation = 8.dp,
+            shape = MaterialTheme.shapes.medium) {
+                Box(Modifier.fillMaxSize()){
+                    Text(
+                        stringResource(R.string.you_can_customize_or_replace_material_theme),
+                        modifier = Modifier.align(Alignment.Center).padding(16.dp)
+                    )
+                }
+
+
+            }
+
+
 
         }
 
