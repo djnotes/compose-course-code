@@ -4,6 +4,9 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.*
 import androidx.compose.material.icons.materialIcon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
 private val DarkColorPalette = darkColors(
@@ -32,6 +35,8 @@ private val LightColorPalette = lightColors(
 //TODO 3: Replace some design systems in MaterialTheme e.g. Type, Color, Shape, etc.
 
 
+val Colors.fabColor: Color
+  get() = if(isLight) Color(0xFFF06292) else Color(0xFFC2185B)
 
 @Composable
 fun CustomThemingTheme(
@@ -44,14 +49,36 @@ fun CustomThemingTheme(
         LightColorPalette
     }
 
-
-    MaterialTheme(
-        colors = colors,
-        typography = Typography,
-        shapes = Shapes,
-        content = content
+    val myButtonColors = MyButtonColors(
+        backgroundColor = if(isSystemInDarkTheme()) Color(0xFF7B1FA2) else Color(0xFFD32F2F),
+        contentColor = if(isSystemInDarkTheme()) Color(0xFFFEF9F9) else Color(0xFF000003)
     )
+
+    CompositionLocalProvider(
+        LocalMyButtonColors provides myButtonColors
+    ){
+        MaterialTheme(
+            colors = colors,
+            typography = Typography,
+            shapes = Shapes,
+            content = content
+        )
+    }
+
+
 }
 
 
+@Immutable
+data class MyButtonColors(val backgroundColor: Color,
+val contentColor: Color
+)
 
+val LocalMyButtonColors = staticCompositionLocalOf{
+    MyButtonColors(Color.Unspecified, Color.Unspecified)
+}
+
+object CustomThemingTheme{
+    val myButtonColors: MyButtonColors
+      @Composable get() = LocalMyButtonColors.current
+}

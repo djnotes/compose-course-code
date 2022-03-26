@@ -1,6 +1,7 @@
 package com.example.customtheming
 
 import android.content.Intent
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import com.example.customtheming.ui.theme.CustomThemingTheme
+import com.example.customtheming.ui.theme.fabColor
 import kotlinx.coroutines.launch
 
 
@@ -131,7 +133,8 @@ fun MyScreen() {
                 Icon(Icons.Outlined.Create, null)
             },
             modifier = Modifier
-                .padding(end = 16.dp)
+                .padding(end = 16.dp),
+                backgroundColor = MaterialTheme.colors.fabColor
             )
         }
 
@@ -177,22 +180,24 @@ fun MyScreen() {
                 .height(16.dp)
             )
 
-            Button(onClick = {
-                scope.launch{
-                    scaffoldState.snackbarHostState.showSnackbar(
-                        context.getString(R.string.welcome_prefix, name)
-                    )
-                }
 
-            }, modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-            ) {
+            MyButton(
+                onClick = {
+                    scope.launch{
+                        scaffoldState.snackbarHostState.showSnackbar(
+                            context.getString(R.string.welcome_prefix, name)
+                        )
+                    }
+                },
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+
+            ){
                 Text(stringResource(id = R.string.lets_go), modifier = Modifier)
 
                 Spacer(Modifier.width(8.dp))
 
                 Icon(Icons.Filled.Face, null)
-
             }
 
             Surface(modifier = Modifier
@@ -205,7 +210,9 @@ fun MyScreen() {
                 Box(Modifier.fillMaxSize()){
                     Text(
                         stringResource(R.string.you_can_customize_or_replace_material_theme),
-                        modifier = Modifier.align(Alignment.Center).padding(16.dp)
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(16.dp)
                     )
                 }
 
@@ -221,9 +228,27 @@ fun MyScreen() {
 
 
 @Preview(showSystemUi = true)
+@Preview(showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun MyScreenPreview() {
     CustomThemingTheme {
         MyScreen()
     }
+}
+
+
+@Composable
+fun MyButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    content : @Composable RowScope.() -> Unit
+) {
+    Button(onClick = onClick,
+        modifier = modifier,
+    content = content,
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = CustomThemingTheme.myButtonColors.backgroundColor,
+            contentColor = CustomThemingTheme.myButtonColors.contentColor
+        )
+    )
 }
