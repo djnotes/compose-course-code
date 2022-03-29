@@ -10,6 +10,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -25,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -32,6 +34,7 @@ import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
@@ -200,13 +203,33 @@ fun MyScreen() {
                 Icon(Icons.Filled.Face, null)
             }
 
-            Surface(modifier = Modifier
-                .padding(8.dp)
-                .fillMaxSize(0.8f)
-                .align(Alignment.CenterHorizontally)
+//            Surface(modifier = Modifier
+//                .padding(8.dp)
+//                .fillMaxSize(0.8f)
+//                .align(Alignment.CenterHorizontally)
+//                ,
+//            elevation = 8.dp,
+//            shape = MaterialTheme.shapes.medium) {
+//                Box(Modifier.fillMaxSize()){
+//                    Text(
+//                        stringResource(R.string.you_can_customize_or_replace_material_theme),
+//                        modifier = Modifier
+//                            .align(Alignment.Center)
+//                            .padding(16.dp)
+//                    )
+//                }
+//
+//
+//            }
+
+            MyCard(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxSize(0.8f)
+                    .align(Alignment.CenterHorizontally)
                 ,
-            elevation = 8.dp,
-            shape = MaterialTheme.shapes.medium) {
+                elevation = 8.dp,
+                shape = MaterialTheme.shapes.medium){
                 Box(Modifier.fillMaxSize()){
                     Text(
                         stringResource(R.string.you_can_customize_or_replace_material_theme),
@@ -215,8 +238,6 @@ fun MyScreen() {
                             .padding(16.dp)
                     )
                 }
-
-
             }
 
 
@@ -224,6 +245,27 @@ fun MyScreen() {
         }
 
     }
+}
+
+@Composable
+fun MyCard(modifier: Modifier = Modifier, elevation: Dp,
+           shape: Shape,
+           content: @Composable BoxScope.() -> Unit) {
+
+    Surface(
+        modifier = modifier,
+        color = CustomThemingTheme.mySubstituteColor.backgroundColor,
+        contentColor = CustomThemingTheme.mySubstituteColor.contentColor,
+        shape = shape,
+        elevation = elevation
+    ){
+        Box{
+            ProvideTextStyle(value = CustomThemingTheme.mySubstituteType.body) {
+                content()
+            }
+        }
+    }
+
 }
 
 
@@ -245,10 +287,14 @@ fun MyButton(
 ) {
     Button(onClick = onClick,
         modifier = modifier,
-    content = content,
+    content = {
+        ProvideTextStyle(CustomThemingTheme.mySubstituteType.body){
+            content()
+        }
+              },
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = CustomThemingTheme.myButtonColors.backgroundColor,
-            contentColor = CustomThemingTheme.myButtonColors.contentColor
+            backgroundColor = CustomThemingTheme.mySubstituteColor.backgroundColor,
+            contentColor = CustomThemingTheme.mySubstituteColor.contentColor
         )
     )
 }

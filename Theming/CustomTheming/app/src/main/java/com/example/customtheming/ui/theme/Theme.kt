@@ -8,6 +8,10 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.sp
 
 private val DarkColorPalette = darkColors(
     primary = Purple200,
@@ -54,12 +58,26 @@ fun CustomThemingTheme(
         contentColor = if(isSystemInDarkTheme()) Color(0xFFFEF9F9) else Color(0xFF000003)
     )
 
+    val mySubstituteColor = MySubstituteColor(
+        backgroundColor = if(darkTheme) Color.DarkGray else Color.White,
+        contentColor = if(darkTheme) Color.Yellow else Color.Black
+    )
+
+    val mySubstituteType = MySubstituteType(
+        defaultFontFamily = FontFamily(Font(com.example.customtheming.R.font.gochihand)),
+        header = TextStyle(fontFamily = FontFamily(Font(com.example.customtheming.R.font.gochihand)), fontSize = 40.sp),
+        body = TextStyle(fontFamily = FontFamily(Font(com.example.customtheming.R.font.gochihand)),
+            fontSize = 20.sp)
+    )
+
     CompositionLocalProvider(
-        LocalMyButtonColors provides myButtonColors
+        LocalMyButtonColors provides myButtonColors,
+        LocalMySubstituteType provides mySubstituteType,
+        LocalMySubstituteColor provides mySubstituteColor
     ){
         MaterialTheme(
-            colors = colors,
-            typography = Typography,
+//            colors = colors,
+//            typography = Typography,
             shapes = Shapes,
             content = content
         )
@@ -81,4 +99,10 @@ val LocalMyButtonColors = staticCompositionLocalOf{
 object CustomThemingTheme{
     val myButtonColors: MyButtonColors
       @Composable get() = LocalMyButtonColors.current
+
+    val mySubstituteType: MySubstituteType
+        @Composable get() = LocalMySubstituteType.current
+
+    val mySubstituteColor: MySubstituteColor
+        @Composable get() = LocalMySubstituteColor.current
 }
