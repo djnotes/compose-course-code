@@ -2,12 +2,15 @@ package com.example.customtheming.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.*
-import androidx.compose.material.icons.materialIcon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.sp
 
 private val DarkColorPalette = darkColors(
     primary = Purple200,
@@ -54,12 +57,26 @@ fun CustomThemingTheme(
         contentColor = if(isSystemInDarkTheme()) Color(0xFFFEF9F9) else Color(0xFF000003)
     )
 
+    val mySubstituteColorSystem = MySubstituteColor(
+        contentColor = if (isSystemInDarkTheme()) Color(0xFF000000) else Color(0xFF512DA8),
+        backgroundColor = if (isSystemInDarkTheme()) Color(0xFFD32F2F) else Color(0xFFAED581)
+        )
+
+    val mySubstituteType = MySubstituteType(
+        defaultFontFamily = FontFamily(Font(com.example.customtheming.R.font.gochihand)),
+        header = TextStyle(fontSize = 30.sp),
+        body = TextStyle(fontSize = 20.sp)
+    )
+
+
     CompositionLocalProvider(
-        LocalMyButtonColors provides myButtonColors
+        LocalMyButtonColors provides myButtonColors,
+        LocalMySubstituteColorSystem provides mySubstituteColorSystem,
+        LocalMySubstituteTypeSystem provides mySubstituteType
     ){
         MaterialTheme(
-            colors = colors,
-            typography = Typography,
+//            colors = colors,
+//            typography = Typography,
             shapes = Shapes,
             content = content
         )
@@ -81,4 +98,37 @@ val LocalMyButtonColors = staticCompositionLocalOf{
 object CustomThemingTheme{
     val myButtonColors: MyButtonColors
       @Composable get() = LocalMyButtonColors.current
+
+    val mySubstituteTypeSystem: MySubstituteType
+        @Composable get() = LocalMySubstituteTypeSystem.current
+
+    val mySubstituteColorSystem: MySubstituteColor
+        @Composable get() = LocalMySubstituteColorSystem.current
 }
+
+@Immutable
+data class MySubstituteType(
+    val defaultFontFamily: FontFamily,
+    val header: TextStyle,
+    val body: TextStyle
+)
+
+val LocalMySubstituteTypeSystem = staticCompositionLocalOf{
+    MySubstituteType(defaultFontFamily = FontFamily.Default,
+    header = TextStyle.Default,
+    body = TextStyle.Default)
+}
+
+@Immutable
+data class MySubstituteColor(
+    val contentColor: Color,
+    val backgroundColor: Color
+)
+
+val LocalMySubstituteColorSystem = staticCompositionLocalOf {
+    MySubstituteColor(
+        contentColor = Color.Unspecified,
+        backgroundColor = Color.Unspecified
+    )
+}
+

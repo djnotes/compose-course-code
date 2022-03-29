@@ -3,38 +3,30 @@ package com.example.customtheming
 import android.content.Intent
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.outlined.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.TransformedText
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
+import com.example.customtheming.ui.mytheme.NewTheme
 import com.example.customtheming.ui.theme.CustomThemingTheme
 import com.example.customtheming.ui.theme.fabColor
 import kotlinx.coroutines.launch
@@ -44,7 +36,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            CustomThemingTheme {
+            NewTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -67,7 +59,7 @@ fun MyScreen() {
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
-           TopAppBar {
+           MyTopAppBar {
                 Text(stringResource(R.string.app_name), modifier = Modifier
                     .padding(8.dp)
                 )
@@ -144,12 +136,16 @@ fun MyScreen() {
             .padding(padding)
         ){
 
-
-            Text(stringResource(id = R.string.welcome_to_my_app), style = MaterialTheme.typography.h2,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-            )
+            ProvideTextStyle(CustomThemingTheme.mySubstituteTypeSystem.header.copy(
+                fontFamily = CustomThemingTheme.mySubstituteTypeSystem.defaultFontFamily
+            )){
+                Text(
+                    stringResource(id = R.string.welcome_to_my_app),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                )
+            }
 
             Spacer(modifier = Modifier
                 .height(16.dp))
@@ -212,7 +208,8 @@ fun MyScreen() {
                         stringResource(R.string.you_can_customize_or_replace_material_theme),
                         modifier = Modifier
                             .align(Alignment.Center)
-                            .padding(16.dp)
+                            .padding(16.dp),
+                        style = CustomThemingTheme.mySubstituteTypeSystem.body
                     )
                 }
 
@@ -231,7 +228,7 @@ fun MyScreen() {
 @Preview(showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun MyScreenPreview() {
-    CustomThemingTheme {
+    NewTheme {
         MyScreen()
     }
 }
@@ -245,10 +242,49 @@ fun MyButton(
 ) {
     Button(onClick = onClick,
         modifier = modifier,
-    content = content,
+    content = {
+        ProvideTextStyle(
+            NewTheme.typeSystem.medium
+        ) { content() }
+              },
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = CustomThemingTheme.myButtonColors.backgroundColor,
-            contentColor = CustomThemingTheme.myButtonColors.contentColor
+            backgroundColor = NewTheme.colorSystem.bg1,
+            contentColor = NewTheme.colorSystem.contentColor
+        ),
+        shape = NewTheme.shapeSystem.round,
+        elevation = ButtonDefaults.elevation(
+            defaultElevation =  NewTheme.elevationSystem.normal,
+            pressedElevation = NewTheme.elevationSystem.pressed
         )
     )
+}
+
+@Composable
+fun MyTopAppBar(
+    modifier: Modifier = Modifier,
+    content: @Composable RowScope.() -> Unit
+) {
+
+
+    val inf = rememberInfiniteTransition()
+    val bgColor by inf.animateColor(
+        NewTheme.colorSystem.bg1,
+        NewTheme.colorSystem.bg2,
+        infiniteRepeatable(tween(3000), repeatMode = RepeatMode.Reverse))
+
+    Row(modifier = modifier
+        .fillMaxWidth()
+        .height(50.dp)
+        .background(
+            bgColor
+        ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        ProvideTextStyle(
+            NewTheme.typeSystem.medium.copy(
+            fontFamily = NewTheme.typeSystem.defaultFontFamily
+        )) {
+            content()
+        }
+    }
 }
