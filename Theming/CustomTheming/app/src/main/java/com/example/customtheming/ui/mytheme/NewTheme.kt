@@ -27,6 +27,9 @@ import com.example.customtheming.R
  *  to get the desired look and feel
  */
 
+val MyColorSystem.borderColor: Color
+    @Composable get() = if(isSystemInDarkTheme()) Color(0xFF388E3C) else Color(0xFFC2185B)
+
 @Composable
 fun NewTheme(
     isDark: Boolean = isSystemInDarkTheme(),
@@ -35,39 +38,39 @@ fun NewTheme(
 
     val shapeSystem = MyShapeSystem(
         round = RoundedCornerShape(topStart = 8.dp, bottomEnd = 8.dp),
-        cut = CutCornerShape(topStart = 16.dp, bottomEnd = 16.dp)
+        cut = CutCornerShape(topEnd = 16.dp, bottomStart = 16.dp)
     )
 
     val typeSystem = MyTypeSystem(
         defaultFontFamily = FontFamily(Font(R.font.gochihand)),
-        tiny = TextStyle(fontSize = 10.sp),
-        medium = TextStyle(fontSize = 15.sp),
-        big = TextStyle(fontSize = 30.sp)
+        tiny = TextStyle(fontSize = 10.sp, fontFamily = FontFamily(Font(R.font.gochihand))),
+        medium = TextStyle(fontSize = 15.sp, fontFamily = FontFamily(Font(R.font.gochihand))),
+        big = TextStyle(fontSize = 40.sp, fontFamily = FontFamily(Font(R.font.gochihand)))
     )
 
     val colorSystem = MyColorSystem(
-        bg1 = if(isDark) Color.LightGray else Color.Blue,
-        bg2 = if (isDark) Color.Green else Color.Red,
-        contentColor = if(isDark) Color.Black else Color.White,
+        contentColor = if(isDark) Color.White else Color.Black,
         barColor = listOf(
-            Color.Red,
-            Color.Green
-        )
+            Color(0xFFAEEA00),
+            Color(0xFFD50000)
+        ),
+        surfaceColor = if(isDark) Color(0xFF0F0F10) else Color(0xFF9575CD),
+        buttonColor = if(isDark) Color(0xFF1976D2) else Color(0xFF64B5F6)
     )
 
 
 
     val textSelectionColors = TextSelectionColors(handleColor = Color.Yellow, backgroundColor = Color.Cyan)
 
-    val myElevation = MyElevation(4.dp, 16.dp)
+    val myElevation = MyElevation(8.dp, 16.dp)
 
     CompositionLocalProvider(
         LocalMyColorSystem provides colorSystem,
         LocalMyTypeSystem provides typeSystem,
         LocalMyShapeSystem provides shapeSystem,
-        LocalContentAlpha provides ContentAlpha.medium,
         LocalTextSelectionColors provides textSelectionColors,
-        LocalMyElevation provides myElevation
+        LocalMyElevation provides myElevation,
+        LocalContentAlpha provides  MyContentAlpha.high
     ){
         content()
     }
@@ -86,8 +89,11 @@ object NewTheme{
     val colorSystem: MyColorSystem
         @Composable get() = LocalMyColorSystem.current
 
+
     val elevationSystem: MyElevation
         @Composable get() = LocalMyElevation.current
+
+
 
 }
 
