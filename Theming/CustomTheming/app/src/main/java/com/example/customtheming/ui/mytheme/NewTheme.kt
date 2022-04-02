@@ -6,6 +6,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.*
+import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
@@ -64,13 +65,16 @@ fun NewTheme(
 
     val myElevation = MyElevation(8.dp, 16.dp)
 
+    val myRipple = MyRipple()
+
     CompositionLocalProvider(
         LocalMyColorSystem provides colorSystem,
         LocalMyTypeSystem provides typeSystem,
         LocalMyShapeSystem provides shapeSystem,
         LocalTextSelectionColors provides textSelectionColors,
         LocalMyElevation provides myElevation,
-        LocalContentAlpha provides  MyContentAlpha.high
+        LocalContentAlpha provides  MyContentAlpha.high,
+        LocalRippleTheme provides myRipple
     ){
         content()
     }

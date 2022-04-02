@@ -177,7 +177,8 @@ fun MyScreen() {
                     BasicTextField(
                         value = name, onValueChange = onNameChange, modifier = Modifier
                             .padding(8.dp),
-                        cursorBrush = SolidColor(NewTheme.colorSystem.contentColor)
+                        cursorBrush = SolidColor(NewTheme.colorSystem.contentColor),
+                        singleLine = true
 
                     )
 
@@ -329,7 +330,7 @@ fun MyButton(
             defaultElevation =  NewTheme.elevationSystem.normal,
             pressedElevation = NewTheme.elevationSystem.pressed
         ),
-        enabled = false
+        enabled = true
     )
 }
 
