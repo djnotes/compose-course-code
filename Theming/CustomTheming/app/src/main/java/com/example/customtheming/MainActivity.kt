@@ -7,6 +7,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -25,8 +26,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -38,6 +41,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
+import com.example.customtheming.ui.mytheme.MyContentAlpha
+import com.example.customtheming.ui.mytheme.NewTheme
 import com.example.customtheming.ui.theme.CustomThemingTheme
 import com.example.customtheming.ui.theme.fabColor
 import kotlinx.coroutines.launch
@@ -47,7 +52,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            CustomThemingTheme {
+            NewTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -70,14 +75,14 @@ fun MyScreen() {
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
-           TopAppBar {
+           MyBar {
                 Text(stringResource(R.string.app_name), modifier = Modifier
                     .padding(8.dp)
                 )
            }
         },
         bottomBar = {
-            BottomAppBar {
+            MyBar {
                 IconButton(onClick = { /*TODO*/ }, modifier = Modifier
                     .weight(1f)) {
                     Icon(Icons.Outlined.AccountBox, null)
@@ -143,108 +148,136 @@ fun MyScreen() {
 
     ){padding->
 
-        Column(modifier = Modifier
-            .padding(padding)
-        ){
-
-
-            Text(stringResource(id = R.string.welcome_to_my_app), style = MaterialTheme.typography.h2,
-                textAlign = TextAlign.Center,
+        MySurface(Modifier.fillMaxHeight()) {
+            Column(
                 modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-            )
+                    .padding(padding)
+            ) {
 
-            Spacer(modifier = Modifier
-                .height(16.dp))
 
-            Box(modifier = Modifier
-                .padding(horizontal = 8.dp)
-                .fillMaxWidth(1f)
-                .height(50.dp)
-                .border(1.dp, Color.Black, MaterialTheme.shapes.small),
-                contentAlignment = Alignment.CenterStart
-            ){
-                BasicTextField(
-                    value = name, onValueChange = onNameChange, modifier = Modifier
-                        .padding(8.dp)
+                //            Text(stringResource(id = R.string.welcome_to_my_app), style = MaterialTheme.typography.h2,
+                //                textAlign = TextAlign.Center,
+                //                modifier = Modifier
+                //                    .align(Alignment.CenterHorizontally)
+                //            )
+
+                MyText(
+                    stringResource(id = R.string.welcome_to_my_app),
+                    style = NewTheme.myType.large,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
                 )
 
-                if(name.isBlank()){
-                    Text(stringResource(R.string.enter_your_name), modifier = Modifier
-                        .padding(8.dp)
-                        .alpha(ContentAlpha.medium)
+                Spacer(
+                    modifier = Modifier
+                        .height(16.dp)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .fillMaxWidth(1f)
+                        .height(50.dp)
+                        .border(1.dp, Color.Black, MaterialTheme.shapes.small),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    BasicTextField(
+                        value = name, onValueChange = onNameChange, modifier = Modifier
+                            .padding(8.dp)
                     )
-                }
 
-            }
-
-
-            Spacer(Modifier
-                .height(16.dp)
-            )
-
-
-            MyButton(
-                onClick = {
-                    scope.launch{
-                        scaffoldState.snackbarHostState.showSnackbar(
-                            context.getString(R.string.welcome_prefix, name)
+                    if (name.isBlank()) {
+                        Text(
+                            stringResource(R.string.enter_your_name), modifier = Modifier
+                                .padding(8.dp)
+                                .alpha(ContentAlpha.medium)
                         )
                     }
-                },
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
 
-            ){
-                Text(stringResource(id = R.string.lets_go), modifier = Modifier)
-
-                Spacer(Modifier.width(8.dp))
-
-                Icon(Icons.Filled.Face, null)
-            }
-
-//            Surface(modifier = Modifier
-//                .padding(8.dp)
-//                .fillMaxSize(0.8f)
-//                .align(Alignment.CenterHorizontally)
-//                ,
-//            elevation = 8.dp,
-//            shape = MaterialTheme.shapes.medium) {
-//                Box(Modifier.fillMaxSize()){
-//                    Text(
-//                        stringResource(R.string.you_can_customize_or_replace_material_theme),
-//                        modifier = Modifier
-//                            .align(Alignment.Center)
-//                            .padding(16.dp)
-//                    )
-//                }
-//
-//
-//            }
-
-            MyCard(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxSize(0.8f)
-                    .align(Alignment.CenterHorizontally)
-                ,
-                elevation = 8.dp,
-                shape = MaterialTheme.shapes.medium){
-                Box(Modifier.fillMaxSize()){
-                    Text(
-                        stringResource(R.string.you_can_customize_or_replace_material_theme),
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .padding(16.dp)
-                    )
                 }
+
+
+                Spacer(
+                    Modifier
+                        .height(16.dp)
+                )
+
+
+                MyButton(
+                    onClick = {
+                        scope.launch {
+                            scaffoldState.snackbarHostState.showSnackbar(
+                                context.getString(R.string.welcome_prefix, name)
+                            )
+                        }
+                    },
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+
+                ) {
+                    MyText(stringResource(id = R.string.lets_go), modifier = Modifier)
+
+                    Spacer(Modifier.width(8.dp))
+
+                    Icon(Icons.Filled.Face, null)
+                }
+
+                //            Surface(modifier = Modifier
+                //                .padding(8.dp)
+                //                .fillMaxSize(0.8f)
+                //                .align(Alignment.CenterHorizontally)
+                //                ,
+                //            elevation = 8.dp,
+                //            shape = MaterialTheme.shapes.medium) {
+                //                Box(Modifier.fillMaxSize()){
+                //                    Text(
+                //                        stringResource(R.string.you_can_customize_or_replace_material_theme),
+                //                        modifier = Modifier
+                //                            .align(Alignment.Center)
+                //                            .padding(16.dp)
+                //                    )
+                //                }
+                //
+                //
+                //            }
+
+                MyCard(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxSize(0.8f)
+                        .align(Alignment.CenterHorizontally),
+                    elevation = NewTheme.myElevation.normal,
+                    shape = NewTheme.myShape.surfaceShape
+                ) {
+                    Box(Modifier.fillMaxSize()) {
+                        Text(
+                            stringResource(R.string.you_can_customize_or_replace_material_theme),
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .padding(16.dp)
+                        )
+                    }
+                }
+
+
             }
-
-
-
         }
 
     }
+}
+
+@Composable
+fun MyText(text: String,
+           modifier: Modifier = Modifier,
+           style: TextStyle = NewTheme.myType.medium,
+           textAlign: TextAlign = TextAlign.Center) {
+
+    Text(text,
+    style = style,
+    textAlign = textAlign,
+    modifier = modifier)
+
 }
 
 @Composable
@@ -254,13 +287,13 @@ fun MyCard(modifier: Modifier = Modifier, elevation: Dp,
 
     Surface(
         modifier = modifier,
-        color = CustomThemingTheme.mySubstituteColor.backgroundColor,
-        contentColor = CustomThemingTheme.mySubstituteColor.contentColor,
+        color = NewTheme.myColor.backgroundColor,
+        contentColor = NewTheme.myColor.contentColor,
         shape = shape,
         elevation = elevation
     ){
         Box{
-            ProvideTextStyle(value = CustomThemingTheme.mySubstituteType.body) {
+            ProvideTextStyle(value = NewTheme.myType.medium) {
                 content()
             }
         }
@@ -273,7 +306,7 @@ fun MyCard(modifier: Modifier = Modifier, elevation: Dp,
 @Preview(showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun MyScreenPreview() {
-    CustomThemingTheme {
+    NewTheme {
         MyScreen()
     }
 }
@@ -288,13 +321,55 @@ fun MyButton(
     Button(onClick = onClick,
         modifier = modifier,
     content = {
-        ProvideTextStyle(CustomThemingTheme.mySubstituteType.body){
+        ProvideTextStyle(NewTheme.myType.small){
             content()
         }
               },
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = CustomThemingTheme.mySubstituteColor.backgroundColor,
-            contentColor = CustomThemingTheme.mySubstituteColor.contentColor
+            backgroundColor = NewTheme.myColor.backgroundColor,
+            contentColor = NewTheme.myColor.contentColor,
+            disabledBackgroundColor = NewTheme.myColor.contentColor
+                .copy(alpha = MyContentAlpha.low)
+                .compositeOver(NewTheme.myColor.backgroundColor)
+        ),
+        shape = NewTheme.myShape.buttonShape,
+        elevation = ButtonDefaults.elevation(
+            defaultElevation = NewTheme.myElevation.normal,
+            pressedElevation = NewTheme.myElevation.pressed
         )
+    )
+}
+
+@Composable
+fun MyBar(
+    modifier: Modifier = Modifier,
+    content: @Composable RowScope.() -> Unit
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(
+                Brush.horizontalGradient(NewTheme.myColor.barColor)
+            )
+        ,
+        content = {
+            ProvideTextStyle(value = NewTheme.myType.small) {
+                content()
+            }
+        }
+    )
+}
+
+
+@Composable
+fun MySurface(modifier: Modifier = Modifier, 
+content: @Composable () -> Unit
+) {
+    Surface(
+        modifier = modifier,
+        shape = NewTheme.myShape.surfaceShape,
+        color = NewTheme.myColor.backgroundColor,
+        contentColor = NewTheme.myColor.contentColor,
+        content = content
     )
 }
