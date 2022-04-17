@@ -3,18 +3,12 @@ package com.example.customtheming
 import android.content.Intent
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CornerBasedShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
@@ -33,17 +27,13 @@ import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.TransformedText
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import com.example.customtheming.ui.mytheme.MyContentAlpha
 import com.example.customtheming.ui.mytheme.NewTheme
-import com.example.customtheming.ui.theme.CustomThemingTheme
 import com.example.customtheming.ui.theme.fabColor
 import kotlinx.coroutines.launch
 
@@ -223,24 +213,6 @@ fun MyScreen() {
                     Icon(Icons.Filled.Face, null)
                 }
 
-                //            Surface(modifier = Modifier
-                //                .padding(8.dp)
-                //                .fillMaxSize(0.8f)
-                //                .align(Alignment.CenterHorizontally)
-                //                ,
-                //            elevation = 8.dp,
-                //            shape = MaterialTheme.shapes.medium) {
-                //                Box(Modifier.fillMaxSize()){
-                //                    Text(
-                //                        stringResource(R.string.you_can_customize_or_replace_material_theme),
-                //                        modifier = Modifier
-                //                            .align(Alignment.Center)
-                //                            .padding(16.dp)
-                //                    )
-                //                }
-                //
-                //
-                //            }
 
                 MyCard(
                     modifier = Modifier
@@ -348,6 +320,7 @@ fun MyBar(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .height(56.dp)
             .background(
                 Brush.horizontalGradient(NewTheme.myColor.barColor)
             )
@@ -356,7 +329,8 @@ fun MyBar(
             ProvideTextStyle(value = NewTheme.myType.small) {
                 content()
             }
-        }
+        },
+        verticalAlignment = Alignment.CenterVertically
     )
 }
 
