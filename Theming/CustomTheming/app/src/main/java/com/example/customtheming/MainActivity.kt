@@ -13,6 +13,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.outlined.*
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import com.example.customtheming.ui.m3.M3Theme
 import com.example.customtheming.ui.mytheme.MyContentAlpha
 import com.example.customtheming.ui.mytheme.NewTheme
 import com.example.customtheming.ui.theme.fabColor
@@ -42,7 +44,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            NewTheme {
+            M3Theme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -55,6 +57,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyScreen() {
     val scaffoldState = rememberScaffoldState()
@@ -62,8 +65,8 @@ fun MyScreen() {
     val context = LocalContext.current
     val (name, onNameChange) = remember{mutableStateOf("")}
 
-    Scaffold(
-        scaffoldState = scaffoldState,
+    androidx.compose.material3.Scaffold(
+        containerColor = androidx.compose.material3.MaterialTheme.colorScheme.secondary,
         topBar = {
            MyBar {
                 Text(stringResource(R.string.app_name), modifier = Modifier
@@ -92,36 +95,9 @@ fun MyScreen() {
 
             }
         },
-        drawerContent = {
-            Text(stringResource(R.string.drawer_content), Modifier.padding(16.dp),
-            style = MaterialTheme.typography.h5)
-
-            Row(Modifier
-                .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                Text(stringResource(R.string.about_us),
-                    Modifier
-                        .padding(8.dp)
-                        .weight(1f))
-                Icon(Icons.Outlined.Info, null, Modifier.weight(1f))
-            }
-
-            Row(Modifier
-                .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                Text(stringResource(R.string.settings),
-                    Modifier
-                        .padding(8.dp)
-                        .weight(1f))
-                Icon(Icons.Outlined.Settings, null, Modifier.weight(1f))
-            }
-
-        },
         floatingActionButton = {
-            ExtendedFloatingActionButton(text = {
-                Text(stringResource(R.string.add_project))
+            androidx.compose.material3.ExtendedFloatingActionButton(text = {
+                MyText(stringResource(R.string.add_project))
             }, onClick = {
                 context.startActivity(
                     Intent(Intent.ACTION_VIEW, "http://github.com/new".toUri())
@@ -131,8 +107,9 @@ fun MyScreen() {
                 Icon(Icons.Outlined.Create, null)
             },
             modifier = Modifier
-                .padding(end = 16.dp),
-                backgroundColor = MaterialTheme.colors.fabColor
+                .padding(end = 16.dp)
+            ,
+                containerColor = androidx.compose.material3.MaterialTheme.colorScheme.tertiary
             )
         }
 
@@ -153,10 +130,11 @@ fun MyScreen() {
 
                 MyText(
                     stringResource(id = R.string.welcome_to_my_app),
-                    style = NewTheme.myType.large,
+                    style = androidx.compose.material3.MaterialTheme.typography.displayMedium,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
+                        .padding(top = 16.dp)
                 )
 
                 Spacer(
@@ -242,7 +220,7 @@ fun MyScreen() {
 @Composable
 fun MyText(text: String,
            modifier: Modifier = Modifier,
-           style: TextStyle = NewTheme.myType.medium,
+           style: TextStyle = androidx.compose.material3.MaterialTheme.typography.displayMedium,
            textAlign: TextAlign = TextAlign.Center) {
 
     Text(text,
@@ -278,7 +256,7 @@ fun MyCard(modifier: Modifier = Modifier, elevation: Dp,
 @Preview(showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun MyScreenPreview() {
-    NewTheme {
+    M3Theme {
         MyScreen()
     }
 }
@@ -322,11 +300,14 @@ fun MyBar(
             .fillMaxWidth()
             .height(56.dp)
             .background(
-                Brush.horizontalGradient(NewTheme.myColor.barColor)
+                androidx.compose.material3.MaterialTheme.colorScheme.primary
             )
+//            .background(
+//                Brush.horizontalGradient(NewTheme.myColor.barColor)
+//            )
         ,
         content = {
-            ProvideTextStyle(value = NewTheme.myType.small) {
+            ProvideTextStyle(value = androidx.compose.material3.MaterialTheme.typography.displayMedium) {
                 content()
             }
         },
@@ -344,6 +325,9 @@ content: @Composable () -> Unit
         shape = NewTheme.myShape.surfaceShape,
         color = NewTheme.myColor.backgroundColor,
         contentColor = NewTheme.myColor.contentColor,
-        content = content
-    )
+    ){
+        ProvideTextStyle(value = androidx.compose.material3.MaterialTheme.typography.displaySmall) {
+            content()
+        }
+    }
 }
