@@ -1,8 +1,7 @@
 package com.example.mycomposetest
 
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onRoot
-import androidx.compose.ui.test.printToLog
 import org.junit.Rule
 import org.junit.Test
 
@@ -19,7 +18,25 @@ class MyAwesomeTest {
 
         composeRule.onRoot(useUnmergedTree = true)
             .printToLog("MyTestTag")
+
+    }
+
+    @Test
+    fun greeting_isDisplayed(){
+        composeRule.setContent{
+            MyBox()
+        }
+
+        composeRule.onNodeWithText("Greet Me")
+            .assertIsDisplayed()
+            .performClick()
+
+        composeRule.onNodeWithText("Welcome")
+            .assertIsDisplayed()
+
         
+
+
     }
 
 }
